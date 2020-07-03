@@ -11,7 +11,6 @@ class App {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({extended: true}));
         this.routePrv.routes(this.app);
-
         this.app.listen(this.SERVER_PORT, () => console.log(`listen port ${this.SERVER_PORT}`));
     }
 }

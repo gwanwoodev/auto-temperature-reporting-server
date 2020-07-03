@@ -3,8 +3,8 @@ import MainController from "../controllers/main.controller";
 export class Routes {
     public routes(app): void {
         app.route("/api/report").post(async (req: Request, res: Response) => {
-            let token = await MainController.login(req.body);
-            let result = await MainController.report({...token, temperature: req.body.temperature, symptoms: []});
+            let token:any = await MainController.login({idVal:req.body.idVal, pwVal: req.body.pwVal});
+            let result = await MainController.report(token);
             res.json(result);
         })
     }
