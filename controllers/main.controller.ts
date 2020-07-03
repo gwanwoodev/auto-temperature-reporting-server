@@ -9,7 +9,6 @@ class MainController {
     public peoples: LoginInterface[];
     public LOGIN_URL: string = "https://coronacheck.net/api/mobileLogin.php";
     public REPORT_URL: string = "https://coronacheck.net/api/putToday.php";
-    public static usersInfo
 
     public async login({idVal, pwVal}): Promise<String> {
         /* Return Acess Token */
@@ -26,7 +25,7 @@ class MainController {
         });
     }
 
-    public async report(token: string) {
+    public async report(...rest) {
         // Request
         /*
         01. get Token
@@ -34,6 +33,25 @@ class MainController {
         03. Random Minutes
         04. setInterval
         */
+
+        let token = rest[0].token;
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-DEVICE-ID": "browser",
+            "X-TOKEN": token
+        };
+
+        let info = {
+            temperature: rest[0].temperature,
+            symptoms: []
+        }
+
+        return await cusRequest({
+            URL: this.REPORT_URL,
+            method: "POST",
+            body: formEncode(info),
+            headers
+        });
     }
 }
 
