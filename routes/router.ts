@@ -4,7 +4,7 @@ export class Routes {
     public routes(app): void {
         app.route("/api/report").post(async (req: Request, res: Response) => {
             let token = await MainController.login(req.body);
-            let result = await MainController.report({...token, temperature: "37.5", symptoms: []});
+            let result = await MainController.report({...token, temperature: req.body.temperature, symptoms: []});
             res.json(result);
         })
     }
