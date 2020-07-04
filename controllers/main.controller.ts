@@ -1,17 +1,18 @@
 import formEncode from "form-urlencoded";
-import {cusRequest, randomNumber} from "../utils/custom";
+import {cusRequest, randomNumber, removeSlave} from "../utils/custom";
+import {LoginInterface} from "../controllers/main.interface";
 
-interface LoginInterface {
-    idVal: string;
-    pwVal: string;
-}
-
-export let slaveList: Array<LoginInterface> = [];
+let slaveList: Array<LoginInterface> = [];
 
 class MainController {
-    public peoples: LoginInterface[];
     public LOGIN_URL: string = "https://coronacheck.net/api/mobileLogin.php";
     public REPORT_URL: string = "https://coronacheck.net/api/putToday.php";
+
+    constructor() {
+        /* Remove Slave at Everyday 12:00 AM */
+        removeSlave(slaveList);
+    }
+
     public async login({idVal, pwVal}): Promise<String> {
         /* Return Acess Token */
         const headers = {
@@ -36,7 +37,7 @@ class MainController {
     }
 
     public async report({token}): Promise<String> {
-        // Request
+        /* Reporting temperature */
         const generatedTemp = `36.${randomNumber()}`;
 
         const headers = {
