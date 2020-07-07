@@ -2,7 +2,7 @@ POST http://localhost:3000/api/report HTTP/1.1
 content-type: application/json
 
 {
-    "idVal": "devyeon1102@gmail.com",
+    "idVal": "gwanwoodev@gmail.com",
     "pwVal": "2cf05a453e862bf9a9302124325799df642e2309896245064de46687d14b06c43fb8df603e81df7085cc6ce3629bb987cf67d3d863150ddec0146b064e9e8f61",
-    "hugaDate": "2020-07-05"
+    "hugaDate": "2020-07-11"
 }

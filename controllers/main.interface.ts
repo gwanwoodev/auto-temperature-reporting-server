@@ -3,3 +3,9 @@ export interface LoginInterface {
     pwVal: string;
     hugaDate?: Date;
 }
+
+export interface LoginResInterface {
+    status: string;
+    token: string;
+    deviceId: string;
+}

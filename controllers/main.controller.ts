@@ -1,6 +1,7 @@
 import formEncode from "form-urlencoded";
-import { cusRequest, randomNumber, removeSlave } from "../utils/custom";
-import { LoginInterface } from "../controllers/main.interface";
+import NodeCron from "node-cron";
+import { cusRequest, randomNumber } from "../utils/custom";
+import { LoginInterface, LoginResInterface } from "../controllers/main.interface";
 
 class MainController {
   public LOGIN_URL: string = "https://coronacheck.net/api/mobileLogin.php";
@@ -10,7 +11,8 @@ class MainController {
     /* Remove Slave at Everyday 12:00 AM */
     var slaveList: Array<LoginInterface>;
     globalThis.slaveList = [];
-    removeSlave();
+    this.removeSlave();
+    this.reportSlave();
   }
 
   public async login({ idVal, pwVal, hugaDate }): Promise<String> {
@@ -31,7 +33,7 @@ class MainController {
       globalThis.slaveList.push({ idVal, pwVal, hugaDate });
     }
 
-    return response;
+    return response.token;
   }
 
   public async report({ token }): Promise<String> {
@@ -54,6 +56,50 @@ class MainController {
       headers,
     });
   }
+
+  public removeSlave = () => {
+    /* Remove Slave at 21:00 */
+    const task = NodeCron.schedule(
+      "0 21 * * *",
+      () => {
+        console.log("Running Remove Slave Schedule.");
+        globalThis.slaveList = globalThis.slaveList.filter((slave) => {
+          const today = new Date();
+          return today < new Date(slave.hugaDate); //TODO;
+        });
+      },
+      {
+        timezone: "Asia/Seoul",
+      }
+    );
+
+    task.start();
+  };
+
+  public reportSlave = () => {
+    /* Report Slave at 07:00 & 19:00 */
+    /* 0 7,19 1-31 * * */
+    const reportTask = NodeCron.schedule(
+      "* * * * *",
+      () => {
+        console.log("Execute Report at 07:00 & 19:00");
+        if (globalThis.slaveList) {
+          globalThis.slaveList.forEach(async slave => {
+            let token = await this.login(slave);
+            let response = await this.report({ token });
+            console.log(response);
+          });
+        }
+
+      },
+      {
+        timezone: "Asia/Seoul"
+      }
+    );
+
+    reportTask.start();
+  }
+
 }
 
 export default new MainController();
