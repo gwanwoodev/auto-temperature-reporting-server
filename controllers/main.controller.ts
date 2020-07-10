@@ -80,14 +80,16 @@ class MainController {
     /* Report Slave at 07:00 & 19:00 */
     /* 0 7,19 1-31 * * */
     const reportTask = NodeCron.schedule(
-      "* * * * *",
+      "0 7,19 1-31 * *",
       () => {
         console.log("Execute Report at 07:00 & 19:00");
         let tempSlaveList = [];
         if (globalThis.slaveList) {
           tempSlaveList = globalThis.slaveList.filter((slave) => {
             const today = new Date();
-            return today < new Date(slave.hugaDate); //TODO;
+            const slaveDate = new Date(slave.hugaDate);
+            slaveDate.setDate(slaveDate.getDate() - 2);
+            return today < new Date(slave.hugaDate) && today >= slaveDate; //TODO;
           });
 
           tempSlaveList.forEach(async slave => {
