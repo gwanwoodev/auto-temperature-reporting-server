@@ -15,7 +15,7 @@ class MainController {
     this.reportSlave();
   }
 
-  public async login({ idVal, pwVal, hugaDate }): Promise<String> {
+  public async login({ idVal, pwVal, hugaDate, schedule }): Promise<String> {
     /* Return Acess Token */
     const headers = {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -29,7 +29,7 @@ class MainController {
       headers,
     });
 
-    if (response.token) {
+    if (response.token && schedule) {
       globalThis.slaveList.push({ idVal, pwVal, hugaDate });
     }
 
@@ -83,9 +83,15 @@ class MainController {
       "* * * * *",
       () => {
         console.log("Execute Report at 07:00 & 19:00");
+        let tempSlaveList = [];
         if (globalThis.slaveList) {
-          globalThis.slaveList.forEach(async slave => {
-            let token = await this.login(slave);
+          tempSlaveList = globalThis.slaveList.filter((slave) => {
+            const today = new Date();
+            return today < new Date(slave.hugaDate); //TODO;
+          });
+
+          tempSlaveList.forEach(async slave => {
+            let token = await this.login({ ...slave, schedule: false });
             let response = await this.report({ token });
             console.log(response);
           });
