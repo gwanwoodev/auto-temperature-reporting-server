@@ -80,7 +80,7 @@ class MainController {
     /* Report Slave at 07:00 & 19:00 */
     /* 0 7,19 1-31 * * */
     const reportTask = NodeCron.schedule(
-      "0 7,19 1-31 * *",
+      "* * * * *",
       () => {
         console.log("Execute Report at 07:00 & 19:00");
         let tempSlaveList = [];
