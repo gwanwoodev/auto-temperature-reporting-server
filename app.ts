@@ -6,7 +6,7 @@ import { Routes } from "./routes/router";
 class App {
     public app: express.Application;
     public routePrv: Routes = new Routes();
-    public SERVER_PORT: Number = 3000;
+    public SERVER_PORT = process.env.PORT;
     constructor() {
         this.app = express();
         this.app.use(bodyParser.json());
