@@ -87,9 +87,13 @@ class MainController {
         if (globalThis.slaveList) {
           tempSlaveList = globalThis.slaveList.filter((slave) => {
             const today = new Date();
+			today.setHours(0, 0, 0, 0);
             const slaveDate = new Date(slave.hugaDate);
             slaveDate.setDate(slaveDate.getDate() - 2);
-            return today < new Date(slave.hugaDate) && today >= slaveDate; //TODO;
+			slaveDate.setHours(0, 0, 0, 0);
+			const endDate = new Date(slave.hugaDate);
+			endDate.setHours(0, 0, 0, 0);
+            return today >= slaveDate && endDate >= today;
           });
 
           tempSlaveList.forEach(async slave => {
