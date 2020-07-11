@@ -11,5 +11,22 @@ export class Routes {
         app.route("/api/test").get((req: Request, res: Response) => {
             res.json(globalThis.slaveList);
         });
+		
+		app.route("/api/queue").get((req: Request, res: Response) => {
+			let tempSlaveList = [];
+			if(globalThis.slaveList) {
+			  tempSlaveList = globalThis.slaveList.filter((slave) => {
+				const today = new Date();
+				today.setHours(0, 0, 0, 0);
+				const slaveDate = new Date(slave.hugaDate);
+				slaveDate.setDate(slaveDate.getDate() - 2);
+				slaveDate.setHours(0, 0, 0, 0);
+				const endDate = new Date(slave.hugaDate);
+				endDate.setHours(0, 0, 0, 0);
+				return today >= slaveDate && endDate >= today;
+			  });
+			res.json(tempSlaveList);
+			}
+		});
     }
 }
