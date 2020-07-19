@@ -1,7 +1,10 @@
 import formEncode from "form-urlencoded";
 import NodeCron from "node-cron";
 import { cusRequest, randomNumber } from "../utils/custom";
-import { LoginInterface, LoginResInterface } from "../controllers/main.interface";
+import {
+  LoginInterface,
+  LoginResInterface,
+} from "../controllers/main.interface";
 
 class MainController {
   public LOGIN_URL: string = "https://coronacheck.net/api/mobileLogin.php";
@@ -30,7 +33,14 @@ class MainController {
     });
 
     if (response.token && schedule) {
-      globalThis.slaveList.push({ idVal, pwVal, hugaDate });
+      let slaveListString = JSON.stringify(globalThis.slaveList);
+      let newMember = { idVal, pwVal, hugaDate };
+
+      if (slaveListString.includes(JSON.stringify(newMember))) {
+        return;
+      }
+
+      globalThis.slaveList.push(newMember);
     }
 
     return response.token;
@@ -87,31 +97,29 @@ class MainController {
         if (globalThis.slaveList) {
           tempSlaveList = globalThis.slaveList.filter((slave) => {
             const today = new Date();
-			today.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
             const slaveDate = new Date(slave.hugaDate);
             slaveDate.setDate(slaveDate.getDate() - 2);
-			slaveDate.setHours(0, 0, 0, 0);
-			const endDate = new Date(slave.hugaDate);
-			endDate.setHours(0, 0, 0, 0);
+            slaveDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(slave.hugaDate);
+            endDate.setHours(0, 0, 0, 0);
             return today >= slaveDate && endDate >= today;
           });
 
-          tempSlaveList.forEach(async slave => {
+          tempSlaveList.forEach(async (slave) => {
             let token = await this.login({ ...slave, schedule: false });
             let response = await this.report({ token });
             console.log(response);
           });
         }
-
       },
       {
-        timezone: "Asia/Seoul"
+        timezone: "Asia/Seoul",
       }
     );
 
     reportTask.start();
-  }
-
+  };
 }
 
 export default new MainController();
