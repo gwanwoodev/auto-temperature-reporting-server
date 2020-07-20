@@ -13,3 +13,7 @@ export const cusRequest = async ({ URL, headers, body, method }: any) => {
 
   return response.json();
 };
+
+export const randomMinutes = () => {
+  return Math.floor(Math.random() * 6);
+};

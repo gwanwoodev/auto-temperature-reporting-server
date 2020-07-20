@@ -1,6 +1,6 @@
 import formEncode from "form-urlencoded";
 import NodeCron from "node-cron";
-import { cusRequest, randomNumber } from "../utils/custom";
+import { cusRequest, randomNumber, randomMinutes } from "../utils/custom";
 import {
   LoginInterface,
   LoginResInterface,
@@ -92,26 +92,30 @@ class MainController {
     const reportTask = NodeCron.schedule(
       "0 7,19 1-31 * *",
       () => {
-        console.log("Execute Report at 07:00 & 19:00");
         let tempSlaveList = [];
-        if (globalThis.slaveList) {
-          tempSlaveList = globalThis.slaveList.filter((slave) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const slaveDate = new Date(slave.hugaDate);
-            slaveDate.setDate(slaveDate.getDate() - 2);
-            slaveDate.setHours(0, 0, 0, 0);
-            const endDate = new Date(slave.hugaDate);
-            endDate.setHours(0, 0, 0, 0);
-            return today >= slaveDate && endDate >= today;
-          });
+        const rMin = randomMinutes() * 60000;
+        console.log(`the task sleep ${rMin / 60000} Minutes`);
+        setTimeout(() => {
+          if (globalThis.slaveList) {
+            tempSlaveList = globalThis.slaveList.filter((slave) => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              const slaveDate = new Date(slave.hugaDate);
+              slaveDate.setDate(slaveDate.getDate() - 2);
+              slaveDate.setHours(0, 0, 0, 0);
+              const endDate = new Date(slave.hugaDate);
+              endDate.setHours(0, 0, 0, 0);
+              return today >= slaveDate && endDate >= today;
+            });
 
-          tempSlaveList.forEach(async (slave) => {
-            let token = await this.login({ ...slave, schedule: false });
-            let response = await this.report({ token });
-            console.log(response);
-          });
-        }
+            tempSlaveList.forEach(async (slave) => {
+              let token = await this.login({ ...slave, schedule: false });
+              let response = await this.report({ token });
+              console.log(new Date());
+            });
+          }
+          console.log("Execute Report at 07:00 & 19:00");
+        }, rMin);
       },
       {
         timezone: "Asia/Seoul",
