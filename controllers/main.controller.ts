@@ -101,7 +101,7 @@ class MainController {
               const today = new Date();
               today.setHours(0, 0, 0, 0);
               const slaveDate = new Date(slave.hugaDate);
-              slaveDate.setDate(slaveDate.getDate() - 2);
+              slaveDate.setDate(slaveDate.getDate() - 3);
               slaveDate.setHours(0, 0, 0, 0);
               const endDate = new Date(slave.hugaDate);
               endDate.setHours(0, 0, 0, 0);
