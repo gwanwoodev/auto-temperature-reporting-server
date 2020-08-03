@@ -89,8 +89,9 @@ class MainController {
   public reportSlave = () => {
     /* Report Slave at 07:00 & 19:00 */
     /* 0 7,19 1-31 * * */
+    /* 0 7,19 1-31 * 5-7,1 */ // Everyday(1~31), 07:00 & 19:00, Fri~Sun, Mon
     const reportTask = NodeCron.schedule(
-      "0 7,19 1-31 * *",
+      "0 7,19 1-31 * 5-7,1",
       () => {
         let tempSlaveList = [];
         const rMin = randomMinutes() * 60000;
@@ -101,17 +102,16 @@ class MainController {
               const today = new Date();
               today.setHours(0, 0, 0, 0);
               const slaveDate = new Date(slave.hugaDate);
-              slaveDate.setDate(slaveDate.getDate() - 3);
+              slaveDate.setDate(new Date(slave.hugaDate).getDate() - 3);
               slaveDate.setHours(0, 0, 0, 0);
               const endDate = new Date(slave.hugaDate);
               endDate.setHours(0, 0, 0, 0);
-              return today >= slaveDate && endDate >= today;
+              return today >= slaveDate && today <= endDate;
             });
 
             tempSlaveList.forEach(async (slave) => {
               let token = await this.login({ ...slave, schedule: false });
               let response = await this.report({ token });
-              console.log(new Date());
             });
           }
           console.log("Execute Report at 07:00 & 19:00");
